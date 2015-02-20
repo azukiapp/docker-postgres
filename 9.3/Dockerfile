@@ -1,37 +1,51 @@
+# FROM debian:wheezy
 FROM azukiapp/ubuntu
 MAINTAINER Azuki <support@azukiapp.com>
 
-ENV POSTGRES_VERSION 9.3
-ENV DEBIAN_FRONTEND noninteractive
+# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
+RUN groupadd -r postgres && useradd -r -g postgres postgres
 
-# Add the PostgreSQL PGP key to verify their Debian packages.
-# It should be the same key as https://www.postgresql.org/media/keys/ACCC4CF8.asc
-RUN  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8 \
-  && echo "deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main $POSTGRES_VERSION" > /etc/apt/sources.list.d/pgdg.list
+# grab gosu for easy step-down from root
+RUN gpg --keyserver pool.sks-keyservers.net --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/* \
+  && curl -o /usr/local/bin/gosu -SL "https://github.com/tianon/gosu/releases/download/1.2/gosu-$(dpkg --print-architecture)" \
+  && curl -o /usr/local/bin/gosu.asc -SL "https://github.com/tianon/gosu/releases/download/1.2/gosu-$(dpkg --print-architecture).asc" \
+  && gpg --verify /usr/local/bin/gosu.asc \
+  && rm /usr/local/bin/gosu.asc \
+  && chmod +x /usr/local/bin/gosu \
+  && apt-get purge -y --auto-remove curl
 
-# Install packages
-RUN  apt-get update \
-  && apt-get -yq install locales sudo \
-  && apt-get -yq install --no-install-recommends \
-      libpq5 \
-      postgresql-$POSTGRES_VERSION \
-      postgresql-client-$POSTGRES_VERSION \
-      postgresql-contrib-$POSTGRES_VERSION \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* \
-  && rm -rf /var/cache/apt
+# make the "en_US.UTF-8" locale so postgres will be utf-8 enabled by default
+RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
+  && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+ENV LANG en_US.utf8
 
-# Adjust PostgreSQL configuration so that remote connections to the
-# database are possible.
-RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/$POSTGRES_VERSION/main/pg_hba.conf && \
-    echo "listen_addresses='*'" >> /etc/postgresql/$POSTGRES_VERSION/main/postgresql.conf
+RUN mkdir /docker-entrypoint-initdb.d
 
-COPY docker-entrypoint.sh /docker-entrypoint
-COPY run /usr/local/bin/run
+RUN apt-key adv --keyserver pool.sks-keyservers.net --recv-keys B97B0AFCAA1A47F044F244A07FCC7D46ACCC4CF8
 
-# Note: This container has no native volume, its expected to run with --volumes-from another
+ENV PG_MAJOR 9.3
+ENV PG_VERSION 9.3.6-1.pgdg70+1
+
+RUN echo 'deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main' $PG_MAJOR > /etc/apt/sources.list.d/pgdg.list
+
+RUN apt-get update \
+  && apt-get install -y postgresql-common \
+  && sed -ri 's/#(create_main_cluster) .*$/\1 = false/' /etc/postgresql-common/createcluster.conf \
+  && apt-get install -y \
+    postgresql-$PG_MAJOR=$PG_VERSION \
+    postgresql-contrib-$PG_MAJOR=$PG_VERSION \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /var/run/postgresql && chown -R postgres /var/run/postgresql
+
+ENV PATH /usr/lib/postgresql/$PG_MAJOR/bin:$PATH
+ENV PGDATA /var/lib/postgresql/data
+VOLUME /var/lib/postgresql/data
+
+COPY docker-entrypoint.sh /
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 EXPOSE 5432
-
-ENTRYPOINT ["/docker-entrypoint"]
-CMD ["/usr/local/bin/run"]
+CMD ["postgres"]

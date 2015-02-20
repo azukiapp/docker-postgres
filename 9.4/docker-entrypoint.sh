@@ -1,20 +1,65 @@
 #!/bin/bash
+set -e
 
-export LANG=${LOCALE:-"en_US.UTF-8"}
-export LANGUAGE=$LANG
+if [ "$1" = 'postgres' ]; then
+	chown -R postgres "$PGDATA"
 
-# We need to uncomment the desired locale from /etc/locale.gen
-echo "Setting LOCALE to $LANG"
-echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
-locale-gen
+	if [ -z "$(ls -A "$PGDATA")" ]; then
+		gosu postgres initdb
 
-export POSTGRESQL_USER=${POSTGRESQL_USER:-"docker"}
-export POSTGRESQL_PASS=${POSTGRESQL_PASS:-"docker"}
-export POSTGRESQL_DB=${POSTGRESQL_DB:-"docker"}
-export POSTGRESQL_TEMPLATE=${POSTGRESQL_TEMPLATE:-"DEFAULT"}
+		sed -ri "s/^#(listen_addresses\s*=\s*)\S+/\1'*'/" "$PGDATA"/postgresql.conf
 
-export POSTGRESQL_BIN=/usr/lib/postgresql/9.4/bin/postgres
-export POSTGRESQL_CONFIG_FILE=/etc/postgresql/9.4/main/postgresql.conf
-export POSTGRESQL_DATA=/var/lib/postgresql/9.4/main
+		# check password first so we can ouptut the warning before postgres
+		# messes it up
+		if [ "$POSTGRESQL_PASS" ]; then
+			pass="PASSWORD '$POSTGRESQL_PASS'"
+			authMethod=md5
+		else
+			# The - option suppresses leading tabs but *not* spaces. :)
+			cat >&2 <<-'EOWARN'
+				****************************************************
+				WARNING: No password has been set for the database.
+								 This will allow anyone with access to the
+								 Postgres port to access your database. In
+								 Docker's default configuration, this is
+								 effectively any other container on the same
+								 system.
 
-eval "$@"
+								 Use "-e POSTGRESQL_PASS=password" to set
+								 it in "docker run".
+				****************************************************
+			EOWARN
+
+			pass=
+			authMethod=trust
+		fi
+
+		: ${POSTGRESQL_USER:=postgres}
+		if [ "$POSTGRESQL_USER" = 'postgres' ]; then
+			op='ALTER'
+		else
+			op='CREATE'
+			gosu postgres postgres --single -jE <<-EOSQL
+				CREATE DATABASE "$POSTGRESQL_USER" ;
+			EOSQL
+			echo
+		fi
+
+		gosu postgres postgres --single -jE <<-EOSQL
+			$op USER "$POSTGRESQL_USER" WITH SUPERUSER $pass ;
+		EOSQL
+		echo
+
+		{ echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PGDATA"/pg_hba.conf
+
+		if [ -d /docker-entrypoint-initdb.d ]; then
+			for f in /docker-entrypoint-initdb.d/*.sh; do
+				[ -f "$f" ] && . "$f"
+			done
+		fi
+	fi
+
+	exec gosu postgres "$@"
+fi
+
+exec "$@"
