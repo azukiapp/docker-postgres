@@ -2,6 +2,7 @@
 set -e
 
 if [ "$1" = 'postgres' ]; then
+	mkdir -p $PGDATA
 	chown -R postgres "$PGDATA"
 
 	if [ -z "$(ls -A "$PGDATA")" ]; then
