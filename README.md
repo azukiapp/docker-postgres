@@ -6,8 +6,10 @@ Base docker image to run a PostgreSQL database server in [`azk`](http://azk.io)
 Postgres versions (tags)
 ---
 
+<versions>
 - [`latest`, `9.3`, `9`](https://github.com/azukiapp/docker-postgres/blob/master/9.3/Dockerfile)
 - [`9.4`](https://github.com/azukiapp/docker-postgres/blob/master/9.4/Dockerfile)
+</versions>
 
 Image content:
 ---
