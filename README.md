@@ -49,7 +49,7 @@ systems({
       // set instances variables
       POSTGRESQL_USER: "azk",
       POSTGRESQL_PASS: "azk",
-      POSTGRESQL_DB  : "#{system.name}_development",
+      POSTGRESQL_DB  : "#{manifest.dir}",
       POSTGRESQL_HOST: "#{net.host}",
       POSTGRESQL_PORT: "#{net.port.data}",
     },
