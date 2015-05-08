@@ -47,11 +47,9 @@ systems({
     },
     envs: {
       // set instances variables
-      POSTGRESQL_USER: "azk",
-      POSTGRESQL_PASS: "azk",
-      POSTGRESQL_DB  : "#{manifest.dir}",
-      POSTGRESQL_HOST: "#{net.host}",
-      POSTGRESQL_PORT: "#{net.port.data}",
+      POSTGRES_USER: "azk",
+      POSTGRES_PASS: "azk",
+      POSTGRES_DB  : "#{manifest.dir}",
     },
     export_envs: {
       // check this gist to configure your database
@@ -88,14 +86,13 @@ $ azk logs postgres
 $ docker logs <CONTAINER_ID>
 ```
 
-Environment variables
----------------------
+### Environment variables
 
-`POSTGRESQL_USER`: Set a specific username for the admin account. (default 'azk')
+`POSTGRES_USER` or `POSTGRESQL_USER`: Set a specific username for the admin account. (default 'azk')
 
-`POSTGRESQL_PASS`: Set a specific password for the admin account. (default 'azk')
+`POSTGRES_PASS` or `POSTGRESQL_PASS`: Set a specific password for the admin account. (default 'azk')
 
-`POSTGRESQL_DB`  : Set a specific database name
+`POSTGRES_DB` or `POSTGRESQL_DB`  : Set a specific database name
 
 ## License
 
