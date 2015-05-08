@@ -1,0 +1,17 @@
+{
+  "name": "azk-postgres-test",
+  "version": "0.0.1",
+  "description": "App to test http://images.azk.io/#/postgres",
+  "main": "index.js",
+  "dependencies": {
+    "mocha": "^1.5.0",
+    "pg": "^4.3.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/azukiapp/docker-postgres/"
+  },
+  "author": "Éverton Ribeiro",
+  "license": "Apache 2.0"
+}

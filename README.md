@@ -7,8 +7,8 @@ Postgres versions (tags)
 ---
 
 <versions>
-- [`latest`, `9.3`, `9`](https://github.com/azukiapp/docker-postgres/blob/master/9.3/Dockerfile)
-- [`9.4`](https://github.com/azukiapp/docker-postgres/blob/master/9.4/Dockerfile)
+- [`9.3`](https://github.com/azukiapp/docker-postgres/blob/master/9.3/Dockerfile)
+- [`9.4`, `9`, latest`](https://github.com/azukiapp/docker-postgres/blob/master/9.4/Dockerfile)
 </versions>
 
 Image content:
@@ -60,13 +60,12 @@ systems({
 });
 ```
 
-
 ### Usage with `docker`
 
 To create the image `azukiapp/postgres`, execute the following command on the docker-postgres folder:
 
 ```sh
-$ docker build -t azukiapp/postgres 9.3/
+$ docker build -t azukiapp/postgres ./9.4
 ```
 
 To run the image and bind to port 5432:
@@ -75,8 +74,15 @@ To run the image and bind to port 5432:
 $ docker run -d -p 5432:5432 azukiapp/postgres
 ```
 
-Logs
----
+### Tests
+
+Obs: Very slow process
+
+```
+$ make test
+```
+
+### Logs
 
 ```sh
 # with azk
