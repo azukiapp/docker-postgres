@@ -8,7 +8,7 @@ Postgres versions (tags)
 
 <versions>
 - [`9.3`](https://github.com/azukiapp/docker-postgres/blob/master/9.3/Dockerfile)
-- [`9.4`, `9`, latest`](https://github.com/azukiapp/docker-postgres/blob/master/9.4/Dockerfile)
+- [`9.4`, `9`, `latest`](https://github.com/azukiapp/docker-postgres/blob/master/9.4/Dockerfile)
 </versions>
 
 Image content:
