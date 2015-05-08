@@ -14,9 +14,7 @@ Postgres versions (tags)
 Image content:
 ---
 
-- Ubuntu 14.04
-- Git
-- VIM
+- debian:wheezy
 - PostgreSQL
 
 ### Usage with `azk`
