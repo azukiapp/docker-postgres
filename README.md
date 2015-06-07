@@ -52,7 +52,7 @@ systems({
     export_envs: {
       // check this gist to configure your database
       // https://gist.github.com/gullitmiranda/62082f2e47c364ef9617
-      DATABASE_URL: "postgres://#{envs.POSTGRESQL_USER}:#{envs.POSTGRESQL_PASS}@#{net.host}:#{net.port.data}/${envs.POSTGRESQL_DB}",
+      DATABASE_URL: "postgres://#{envs.POSTGRES_USER}:#{envs.POSTGRES_PASS}@#{net.host}:#{net.port.data}/${envs.POSTGRES_DB}",
     },
   },
 });
