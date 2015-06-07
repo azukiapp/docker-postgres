@@ -51,8 +51,10 @@ systems({
     },
     export_envs: {
       // check this gist to configure your database
-      // https://gist.github.com/gullitmiranda/62082f2e47c364ef9617
+      // Ruby eg in: https://gist.github.com/gullitmiranda/62082f2e47c364ef9617
       DATABASE_URL: "postgres://#{envs.POSTGRES_USER}:#{envs.POSTGRES_PASS}@#{net.host}:#{net.port.data}/${envs.POSTGRES_DB}",
+      // Exlir eg in: https://github.com/azukiapp/hello_phoenix/blob/master/config/database.uri.exs
+      // DATABASE_URL: "ecto+postgres://#{envs.POSTGRES_USER}:#{envs.POSTGRES_PASS}@#{net.host}:#{net.port.data}/${envs.POSTGRES_DB}",
     },
   },
 });
