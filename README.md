@@ -36,7 +36,7 @@ systems({
     shell: "/bin/bash",
     wait: {"retry": 25, "timeout": 1000},
     mounts: {
-      '/var/lib/postgresql': persistent("postgresql-#{system.name}"),
+      '/var/lib/postgresql/data': persistent("postgresql-#{system.name}"),
       '/var/log/postgresql': path("./log/postgresql"),
     },
     ports: {
