@@ -15,9 +15,13 @@ test: all
 	azk shell pg94 -c "rm -Rf /var/lib/postgresql/data/*"
 	azk shell pg93 -c "rm -Rf /var/lib/postgresql/data/*"
 
+	# Run provision of test systems
+	azk shell pg93-test -c "npm install"
+	azk shell pg93-test -c "npm install"
+
 	# Start and run a tests
 	azk start pg94,pg93
-	azk shell pg94-test -c "./node_modules/.bin/mocha"
+	azk shell pg93-test -c "./node_modules/.bin/mocha"
 	azk shell pg93-test -c "./node_modules/.bin/mocha"
 
 	# Restart and run a tests
