@@ -1,4 +1,4 @@
-[azukiapp/postgres](http://images.azk.io/#/postgres)
+[azukiapp/postgres](http://images.azk.io/#/postgres?from=github-readme)
 ==================
 
 Base docker image to run a PostgreSQL database server in [`azk`](http://azk.io)
@@ -7,15 +7,11 @@ Postgres versions (tags)
 ---
 
 <versions>
-- [`9.3`](https://github.com/azukiapp/docker-postgres/blob/master/9.3/Dockerfile)
-- [`9.4`, `9`, `latest`](https://github.com/azukiapp/docker-postgres/blob/master/9.4/Dockerfile)
+- [`latest`, `9`, `9.4`, `9.4.5`](https://github.com/azukiapp/docker-postgres/blob/master/9.4/Dockerfile)
+- [`9.3`, `9.3.10`](https://github.com/azukiapp/docker-postgres/blob/master/9.3/Dockerfile)
 </versions>
 
-Image content:
----
-
-- debian:wheezy
-- PostgreSQL
+Image content use https://github.com/docker-library/postgres
 
 ### Usage with `azk`
 
@@ -29,18 +25,17 @@ Example of using this image with [azk](http://azk.io):
 // Adds the systems that shape your system
 systems({
   postgres: {
-    // Dependent systems
-    depends: [], // postgres, postgres, mongodb ...
-    // More images:  http://images.azk.io
-    image: {"docker": "azukiapp/postgres"},
+    // More info about postgres image: http://images.azk.io/#/postgres?from=images-azkfile-postgres
+    image: {"docker": "azukiapp/postgres:9.4"},
     shell: "/bin/bash",
     wait: {"retry": 25, "timeout": 1000},
     mounts: {
-      '/var/lib/postgresql/data': persistent("postgresql-#{system.name}"),
-      '/var/log/postgresql': path("./log/postgresql"),
+      '/var/lib/postgresql/data': persistent("#{system.name}-data"),
+      // to clean postgres data, run:
+      // $ azk shell postgres -c "rm -rf /var/lib/postgresql/data/*"
     },
     ports: {
-      // exports global variables
+      // exports global variables: "#{net.port.data}"
       data: "5432/tcp",
     },
     envs: {
@@ -55,9 +50,32 @@ systems({
       DATABASE_URL: "postgres://#{envs.POSTGRES_USER}:#{envs.POSTGRES_PASS}@#{net.host}:#{net.port.data}/${envs.POSTGRES_DB}",
       // Exlir eg in: https://github.com/azukiapp/hello_phoenix/blob/master/config/database.uri.exs
       // DATABASE_URL: "ecto+postgres://#{envs.POSTGRES_USER}:#{envs.POSTGRES_PASS}@#{net.host}:#{net.port.data}/${envs.POSTGRES_DB}",
+      // or use splited envs:
+      // POSTGRES_USER: "#{envs.POSTGRES_USER}",
+      // POSTGRES_PASS: "#{envs.POSTGRES_PASS}",
+      // POSTGRES_HOST: "#{net.host}",
+      // POSTGRES_PORT: "#{net.port.data}",
+      // POSTGRES_DB  : "#{envs.POSTGRES_DB}",
     },
   },
 });
+```
+
+###### NOTE:
+
+Do not forget to add `postgres` as a dependency of your application:
+
+e.g.:
+
+```js
+systems({
+  'my-app': {
+    // Dependent systems
+    depends: ["postgres"],
+    /* ... */
+  },
+  'postgres': { /* ... */ }
+})
 ```
 
 ### Usage with `docker`
@@ -65,7 +83,7 @@ systems({
 To create the image `azukiapp/postgres`, execute the following command on the docker-postgres folder:
 
 ```sh
-$ docker build -t azukiapp/postgres ./9.4
+$ docker build -t azukiapp/postgres:9.4 ./9.4
 ```
 
 To run the image and bind to port 5432:
@@ -94,11 +112,11 @@ $ docker logs <CONTAINER_ID>
 
 ### Environment variables
 
-`POSTGRES_USER` or `POSTGRESQL_USER`: Set a specific username for the admin account. (default 'azk')
+`POSTGRES_USER`: Set a specific username for the admin account. (default 'azk')
 
-`POSTGRES_PASS` or `POSTGRESQL_PASS`: Set a specific password for the admin account. (default 'azk')
+`POSTGRES_PASS`: Set a specific password for the admin account. (default 'azk')
 
-`POSTGRES_DB` or `POSTGRESQL_DB`  : Set a specific database name
+`POSTGRES_DB`: Set a specific database name
 
 ## License
 

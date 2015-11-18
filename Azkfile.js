@@ -10,7 +10,7 @@ systems({
     shell: "/bin/bash",
     wait: { "retry": 25, "timeout": 1000 },
     mounts: {
-      '/var/lib/postgresql': persistent("postgresql-#{system.name}"),
+      '/var/lib/postgresql': persistent("#{system.name}-data"),
     },
     ports: {
       // exports global variables
@@ -18,12 +18,12 @@ systems({
     },
     envs: {
       // set instances variables
-      POSTGRESQL_USER: "azk",
-      POSTGRESQL_PASS: "azk",
-      POSTGRESQL_DB  : "#{system.name}",
+      POSTGRES_USER: "azk",
+      POSTGRES_PASS: "azk",
+      POSTGRES_DB  : "#{system.name}",
     },
     export_envs: {
-      DATABASE_URL: "postgres://#{envs.POSTGRESQL_USER}:#{envs.POSTGRESQL_PASS}@#{net.host}:#{net.port.data}/${envs.POSTGRESQL_DB}",
+      DATABASE_URL: "postgres://#{envs.POSTGRES_USER}:#{envs.POSTGRES_PASS}@#{net.host}:#{net.port.data}/${envs.POSTGRES_DB}",
     },
   },
 
