@@ -1,0 +1,33 @@
+general:
+  artifacts:
+    - "images"
+  branches:
+    ignore:
+      - /rootfs-.*/
+
+machine:
+  pre:
+    - |
+      sudo curl -Ls -o /usr/bin/docker 'https://s3-external-1.amazonaws.com/circle-downloads/docker-1.9.0-circleci'
+      sudo chmod 0755 /usr/bin/docker
+      sudo service docker start
+    - |
+      curl -Ls http://azk.io/install.sh | bash
+
+dependencies:
+  override:
+    - docker info
+    - azk agent start
+    - azk doctor
+
+test:
+  override:
+    - make test:
+        parallel: true
+
+# deployment:
+#   hub:
+#     branch: master
+#     commands:
+#       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+#       - docker push circleci/elasticsearch
