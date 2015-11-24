@@ -6,15 +6,30 @@ general:
       - /rootfs-.*/
 
 machine:
+  environment:
+    AZK_VERSION: stable
+
   pre:
     - |
       sudo curl -Ls -o /usr/bin/docker 'https://s3-external-1.amazonaws.com/circle-downloads/docker-1.9.0-circleci'
       sudo chmod 0755 /usr/bin/docker
       sudo service docker start
-    - |
-      curl -Ls http://azk.io/install.sh | bash
 
 dependencies:
+  cache_directories:
+    - "~/deps"
+  pre:
+    - |
+      # install azk
+      curl -Ls https://gist.githubusercontent.com/gullitmiranda/f80e1b83363720998db1/raw/c2e131b301aa7b9e3cf45ef16f55663a30b38873/pre_circle.sh | bash
+      mkdir -p ~/deps
+      cd ~/deps
+      if [[ ! -d "azk-${AZK_VERSION}" ]]; then
+        curl -L https://github.com/azukiapp/azk/archive/${AZK_VERSION}.tar.gz | tar zxv
+      fi
+      cd azk-${AZK_VERSION}
+      make
+
   override:
     - docker info
     - azk agent start
