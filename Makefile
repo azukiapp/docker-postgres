@@ -1,13 +1,15 @@
-# `adocker` is alias to `azk docker`
+DOCKER := $(shell which adocker || which docker)
+IMAGE_NAME := "azukiapp/postgres"
+
 all:
-	adocker build -t azukiapp/postgres 9.4
-	adocker build -t azukiapp/postgres:9.4 9.4
-	adocker build -t azukiapp/postgres:9.3 9.3
+	${DOCKER} build -t ${IMAGE_NAME} 9.4
+	${DOCKER} build -t ${IMAGE_NAME}:9.4 9.4
+	${DOCKER} build -t ${IMAGE_NAME}:9.3 9.3
 
 no-cache:
-	adocker build --rm --no-cache -t azukiapp/postgres 9.4
-	adocker build --rm --no-cache -t azukiapp/postgres:9.4 9.4
-	adocker build --rm --no-cache -t azukiapp/postgres:9.3 9.3
+	${DOCKER} build --rm --no-cache -t ${IMAGE_NAME} 9.4
+	${DOCKER} build --rm --no-cache -t ${IMAGE_NAME}:9.4 9.4
+	${DOCKER} build --rm --no-cache -t ${IMAGE_NAME}:9.3 9.3
 
 test: all
 	# Clear env before run tests
