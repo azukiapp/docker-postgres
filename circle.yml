@@ -29,6 +29,7 @@ dependencies:
       fi
       cd azk-${AZK_VERSION}
       make
+      sudo ln -sf $(pwd)/bin/azk /usr/bin/azk
 
   override:
     - docker info
