@@ -6,6 +6,10 @@ general:
       - /rootfs-.*/
 
 machine:
+  environment:
+    AZK_REMOVE_CONTAINER: false
+    AZK_DISABLE_TRACKER: true
+
   pre:
     - |
       sudo curl -Ls -o /usr/bin/docker 'https://s3-external-1.amazonaws.com/circle-downloads/docker-1.9.0-circleci'
@@ -18,7 +22,7 @@ machine:
 dependencies:
   override:
     - docker info
-    - azk agent start
+    - azk agent start --quiet
     - azk doctor
 
 test:
