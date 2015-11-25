@@ -1,8 +1,11 @@
 [azukiapp/postgres](http://images.azk.io/#/postgres?from=github-readme)
 ==================
-[![Circle CI](https://circleci.com/gh/azukiapp/docker-postgres.svg?style=svg)](https://circleci.com/gh/azukiapp/docker-postgres)
 
 Base docker image to run a PostgreSQL database server in [`azk`](http://azk.io)
+
+[![Circle CI](https://circleci.com/gh/azukiapp/docker-postgres.svg?style=svg)](https://circleci.com/gh/azukiapp/docker-postgres)
+[![ImageLayers Size](https://img.shields.io/imagelayers/image-size/azukiapp/postgres/latest.svg?style=plastic)](https://imagelayers.io/?images=azukiapp/postgres:latest)
+[![ImageLayers Layers](https://img.shields.io/imagelayers/layers/azukiapp/postgres/latest.svg?style=plastic)](https://imagelayers.io/?images=azukiapp/postgres:latest)
 
 Postgres versions (tags)
 ---
