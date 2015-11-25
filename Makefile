@@ -1,17 +1,19 @@
 DOCKER := $(shell which adocker || which docker)
 IMAGE_NAME := "azukiapp/postgres"
 
-all:
+all: build test
+
+build:
 	${DOCKER} build -t ${IMAGE_NAME} 9.4
 	${DOCKER} build -t ${IMAGE_NAME}:9.4 9.4
 	${DOCKER} build -t ${IMAGE_NAME}:9.3 9.3
 
-no-cache:
+build-no-cache:
 	${DOCKER} build --rm --no-cache -t ${IMAGE_NAME} 9.4
 	${DOCKER} build --rm --no-cache -t ${IMAGE_NAME}:9.4 9.4
 	${DOCKER} build --rm --no-cache -t ${IMAGE_NAME}:9.3 9.3
 
-test: all
+test:
 	# Clear env before run tests
 	azk stop pg94,pg93 || exit 0
 	azk shell pg94 -c "rm -Rf /var/lib/postgresql/data/*"
@@ -34,4 +36,4 @@ test: all
 	# Final clean
 	azk stop pg94,pg93 || exit 0
 
-.PHONY: test no-cache all
+.PHONY: test build build-no-cache all
