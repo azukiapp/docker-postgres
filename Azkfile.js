@@ -2,15 +2,16 @@
  * Documentation: http://docs.azk.io/Azkfile.js
  */
 
+var version    = env.PGTEST_VERSION;
 // Adds the systems that shape your system
 systems({
-  pg94: {
+  pg: {
     // More images:  http://images.azk.io
-    image: { docker: 'azukiapp/postgres:9.4' },
+    image: { docker: "azukiapp/postgres:" + version },
     shell: "/bin/bash",
     wait: { "retry": 25, "timeout": 1000 },
     mounts: {
-      '/var/lib/postgresql': persistent("#{system.name}-data"),
+      '/var/lib/postgresql': persistent("#{manifest.dir}-data-" + version),
     },
     ports: {
       // exports global variables
@@ -27,9 +28,9 @@ systems({
     },
   },
 
-  "pg94-test": {
+  "pg-test": {
     // Dependent systems
-    depends: [ "pg94" ],
+    depends: [ "pg" ],
     // More images:  http://images.azk.io
     image: { "docker": "azukiapp/node" },
     // Steps to execute before running instances
@@ -42,15 +43,5 @@ systems({
       '/azk/#{manifest.dir}': path("."),
       '/azk/#{manifest.dir}/node_modules': persistent("node_modules"),
     },
-  },
-
-  pg93: {
-    extends: 'pg94',
-    image: { docker: 'azukiapp/postgres:9.3' },
-  },
-
-  'pg93-test': {
-    extends: 'pg94-test',
-    depends: [ "pg93" ]
   },
 });
