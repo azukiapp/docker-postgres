@@ -11,9 +11,9 @@ Postgres versions (tags)
 ---
 
 <versions>
+- [`latest`, `9`, `9.5`, `9.5.0`](https://github.com/azukiapp/docker-postgres/blob/master/9.5/Dockerfile)
+- [`9.4`, `9.4.5`](https://github.com/azukiapp/docker-postgres/blob/master/9.4/Dockerfile)
 - [`9.3`, `9.3.10`](https://github.com/azukiapp/docker-postgres/blob/master/9.3/Dockerfile)
-- [`latest`, `9`, `9.4`, `9.4.5`](https://github.com/azukiapp/docker-postgres/blob/master/9.4/Dockerfile)
-- [`9.5-beta2`, `9.5`](https://github.com/azukiapp/docker-postgres/blob/master/9.5/Dockerfile)
 </versions>
 
 Image content use https://github.com/docker-library/postgres
