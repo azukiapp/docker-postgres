@@ -7,7 +7,6 @@ general:
 
 machine:
   environment:
-    IMAGE_DEPENDENCIE: azukiapp/node
     AZK_REMOVE_CONTAINER: false
     AZK_DISABLE_TRACKER: true
 
@@ -25,18 +24,10 @@ machine:
 
 dependencies:
   cache_directories:
+    - "~/.azk"
     - "~/docker"
   override:
     - docker info
-    - |
-      # cache image
-      if [[ -e ~/docker/${IMAGE_DEPENDENCIE}.tar ]]; then
-        docker load -i ~/docker/${IMAGE_DEPENDENCIE}.tar
-      else
-        docker pull ${IMAGE_DEPENDENCIE}
-        mkdir -p $(dirname ~/docker/${IMAGE_DEPENDENCIE})
-        docker save ${IMAGE_DEPENDENCIE} > ~/docker/${IMAGE_DEPENDENCIE}.tar
-      fi
     - azk agent start --quiet
     - azk doctor
 
