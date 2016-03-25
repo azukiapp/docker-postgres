@@ -36,8 +36,6 @@ systems({
     wait: {"retry": 25, "timeout": 1000},
     mounts: {
       '/var/lib/postgresql/data': persistent("#{system.name}-data"),
-      // to clean postgres data, run:
-      // $ azk shell postgres -c "rm -rf /var/lib/postgresql/data/*"
     },
     ports: {
       // exports global variables: "#{net.port.data}"
@@ -122,6 +120,69 @@ $ docker logs <CONTAINER_ID>
 `POSTGRES_PASS`: Set a specific password for the admin account. (default 'azk')
 
 `POSTGRES_DB`: Set a specific database name
+
+Clean DB data
+-------------
+
+to clean postgres data, run:
+
+```shell
+# this makes sure that postgres is stopped
+$ azk stop postgres
+# remove all files in $PGDATA (`/*` is required)
+$ azk shell postgres -- rm -rf "\$PGDATA/*"
+```
+
+Migrating an existing PostgreSQL Server
+----------------------------------
+
+In order to migrate your current PostgreSQL server, perform the following commands from your current server:
+
+### Export dump
+
+```sh
+$ pg_dump --host <host> --port <port> --username <name> --password=<password> --dbname <database name> > dbexport.sql
+```
+
+### Import from dump (Manual)
+
+```sh
+$ azk start postgres
+azk: ↑ starting `postgres` system, 1 new instances...
+azk: ✓ checking `azukiapp/postgres:9.4` image...
+azk: ◴ waiting for `postgres` system to start, trying connection to port data/tcp...
+
+┌───┬──────────┬───────────┬──────────────┬─────────────────┬──────────────┐
+│   │ System   │ Instances │ Hostname/url │ Instances-Ports │ Provisioned  │
+├───┼──────────┼───────────┼──────────────┼─────────────────┼──────────────┤
+│ ↑ │ postgres │ 1         │ dev.azk.io   │ 1-data:32768    │ 2 months ago │
+└───┴──────────┴───────────┴──────────────┴─────────────────┴──────────────┘
+
+$ azk shell postgres
+$ psql --host dev.azk.io --port 32768 --username ${POSTGRES_USER} --password=${POSTGRES_PASS} --dbname=${POSTGRES_DB} < dbexport.sql
+```
+
+NOTE: remember to replace the `port` number through which it is running (as in the table above or using the `azk status`)
+
+### Auto import using Azkfile
+
+you can use the [entrypoint](https://github.com/docker-library/postgres/blob/3f8e9784438c8fe54f831c301a45f4d55f6fa453/9.5/docker-entrypoint.sh) of the image of postgres to do the loading of the dump automatically.
+
+1. put all dump files in `./data-dump/`
+2. Add the mount:
+
+```js
+    mounts: {
+      '/var/lib/postgresql/data'    : persistent("#{system.name}-data"),
+      '/docker-entrypoint-initdb.d/': path("./data-dump/"),
+    },
+```
+
+- valid extendions: `.sh`, `.sql` and `.sql.gz`;
+
+> NOTE: the charging process is automated, as well as the creation of the database is done only the first time.
+> To clean DB data see section [Clean DB data](#clean-db-data)
+
 
 ## License
 
