@@ -141,8 +141,10 @@ In order to migrate your current PostgreSQL server, perform the following comman
 ### Export dump
 
 ```sh
-$ pg_dump --host <host> --port <port> --username <name> --password=<password> --dbname <database name> > dbexport.sql
+$ pg_dump --host <host> --port <port> --username <name> --password=<password> --dbname <database name> -O -x > dbexport.sql
 ```
+
+The ```-O -x``` flags export the database without ownership information. If you don't do this you might get an error on import.
 
 ### Import from dump (Manual)
 
