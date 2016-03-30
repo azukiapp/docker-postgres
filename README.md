@@ -160,7 +160,7 @@ azk: ◴ waiting for `postgres` system to start, trying connection to port data/
 │ ↑ │ postgres │ 1         │ dev.azk.io   │ 1-data:32768    │ 2 months ago │
 └───┴──────────┴───────────┴──────────────┴─────────────────┴──────────────┘
 
-$ azk shell postgres
+$ azk shell
 $ psql --host dev.azk.io --port 32768 --username ${POSTGRES_USER} --password=${POSTGRES_PASS} --dbname=${POSTGRES_DB} < dbexport.sql
 ```
 
